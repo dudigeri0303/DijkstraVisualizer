@@ -22,7 +22,6 @@ type ConnectionType int
 
 const (
 	BASICCONN ConnectionType = iota
-	CURRENTCONN
 	PATHCONN
 )
 
@@ -40,7 +39,7 @@ func newNode(x_val int32, y_val int32, index_value int) Node {
 	return Node{
 		x:        x_val,
 		y:        y_val,
-		radius:   20.0,
+		radius:   nodeRadius,
 		index:    index_value,
 		nodeType: BASICNODE,
 	}
@@ -70,7 +69,7 @@ func (node *Node) draw() {
 		color = rl.Green
 	}
 	rl.DrawCircle(node.x, node.y, node.radius, color)
-	rl.DrawText(strconv.Itoa(node.index), node.x, node.y, 10, rl.White)
+	rl.DrawText(strconv.Itoa(node.index), node.x, node.y, nodeIndexFontSize, rl.White)
 }
 
 func (node *Node) updateType(newType NodeType) {
@@ -100,8 +99,6 @@ func (conn *Connection) draw() {
 	switch conn.connType {
 	case BASICCONN:
 		color = rl.Black
-	case CURRENTCONN:
-		color = rl.Blue
 	case PATHCONN:
 		color = rl.Green
 	}
@@ -110,7 +107,7 @@ func (conn *Connection) draw() {
 	midY := (conn.fromNode.y + conn.toNode.y) / 2
 
 	rl.DrawLine(conn.fromNode.x, conn.fromNode.y, conn.toNode.x, conn.toNode.y, color)
-	rl.DrawText(strconv.FormatFloat(float64(conn.cost), 'f', 2, 64), midX, midY, 15, rl.Black)
+	rl.DrawText(strconv.FormatFloat(float64(conn.cost), 'f', 2, 64), midX, midY, connValueFontSize, rl.Black)
 }
 
 func (conn *Connection) updateType(newType ConnectionType) {
@@ -189,10 +186,10 @@ func (graph *Graph) updateDataStrings(numOfNodes int, distance []float32, from [
 }
 
 func (graph *Graph) drawGraphData() {
-	rl.DrawText(graph.nodeStr.getValue(), 10, 10, 20, rl.Black)
-	rl.DrawText(graph.fromDataStr.getValue(), 90, 10, 20, rl.Black)
-	rl.DrawText(graph.distanceDataStr.getValue(), 150, 10, 20, rl.Black)
-	rl.DrawText(graph.dDataStr.getValue(), 250, 10, 20, rl.Black)
+	rl.DrawText(graph.nodeStr.getValue(), 10, 10, dataTableFontSize, rl.Black)
+	rl.DrawText(graph.fromDataStr.getValue(), 90, 10, dataTableFontSize, rl.Black)
+	rl.DrawText(graph.distanceDataStr.getValue(), 150, 10, dataTableFontSize, rl.Black)
+	rl.DrawText(graph.dDataStr.getValue(), 250, 10, dataTableFontSize, rl.Black)
 }
 
 // Algo data container

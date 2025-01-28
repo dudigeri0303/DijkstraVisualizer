@@ -77,12 +77,16 @@ func dijkstraAlgo(graph *Graph) {
 		return minIndex
 	}
 
-	colorResultInGraph := func(data *AlgoDataContainer) {
+	colorResultInGraph := func(data *AlgoDataContainer) error {
 		cni := graph.destNode.index
 		nodes := &(graph.nodes)
 		conns := &(graph.connections)
 
 		for graph.startNode.nodeType != PATHNODE {
+			if cni < 0 || cni >= len(graph.nodes) {
+				return fmt.Errorf("index out of range. Please create a new graph, becouse the previous was unsolveable")
+			}
+
 			(*nodes)[cni].updateType(PATHNODE)
 			fni := (*data.from)[cni]
 
@@ -94,6 +98,8 @@ func dijkstraAlgo(graph *Graph) {
 			}
 			cni = fni
 		}
+
+		return nil
 	}
 
 	isFinished := func(data *AlgoDataContainer) bool {
@@ -126,9 +132,14 @@ func dijkstraAlgo(graph *Graph) {
 
 			time.Sleep(1 * time.Second)
 		}
-		colorResultInGraph(&data)
+		err := colorResultInGraph(&data)
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
 	} else {
 		fmt.Println("The graphs start or dest node is nil, select them!")
+		return
 	}
 	fmt.Println("Algo finished")
 }

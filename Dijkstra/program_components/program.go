@@ -9,13 +9,17 @@ import (
 
 // Constants
 const (
-	windowWidth    int32   = 1100
-	windowHeight   int32   = 900
-	uiWidth        int32   = 150
-	uiHeight       int32   = 200
-	buttonWidth    float32 = 80.0
-	buttonHeight   float32 = 50.0
-	buttonDistance float32 = 5.0
+	windowWidth       int32   = 1100
+	windowHeight      int32   = 900
+	buttonWidth       float32 = 80.0
+	buttonHeight      float32 = 50.0
+	buttonDistance    float32 = 5.0
+	nodeRadius        float32 = 20.0
+	uiWidthOffset     float32 = 330.0
+	buttonY           float32 = 0
+	connValueFontSize int32   = 15
+	nodeIndexFontSize int32   = 10
+	dataTableFontSize int32   = 20
 )
 
 // Create and add components
@@ -102,23 +106,21 @@ func drawState(graph *Graph) {
 }
 
 func drawAndHandleGui(graph *Graph, index *int) {
-	buttonY := 0
-	var uiWidthOffset float32 = 330.0
 	drawIndex := 0
 
-	if gui.Button(rl.NewRectangle((buttonWidth+10)*float32(drawIndex)+uiWidthOffset, float32(buttonY), buttonWidth, buttonHeight), "Node") {
+	if gui.Button(rl.NewRectangle((buttonWidth+10)*float32(drawIndex)+uiWidthOffset, buttonY, buttonWidth, buttonHeight), "Node") {
 		addNodeToGraph(&graph.nodes, &graph.connectionMap, index)
 		graph.nodeStr.appendValue(fmt.Sprintf("%d\n", *index))
 		*index = *index + 1
 	}
 	drawIndex++
 
-	if gui.Button(rl.NewRectangle((buttonWidth+10)*float32(drawIndex)+uiWidthOffset, float32(buttonY), buttonWidth, buttonHeight), "Start") {
+	if gui.Button(rl.NewRectangle((buttonWidth+10)*float32(drawIndex)+uiWidthOffset, buttonY, buttonWidth, buttonHeight), "Start") {
 		go dijkstraAlgo(graph)
 	}
 	drawIndex++
 
-	if gui.Button(rl.NewRectangle((buttonWidth+10)*float32(drawIndex)+uiWidthOffset, float32(buttonY), buttonWidth, buttonHeight), "New Graph") {
+	if gui.Button(rl.NewRectangle((buttonWidth+10)*float32(drawIndex)+uiWidthOffset, buttonY, buttonWidth, buttonHeight), "New Graph") {
 		*graph = newGraph()
 		*index = 0
 	}
