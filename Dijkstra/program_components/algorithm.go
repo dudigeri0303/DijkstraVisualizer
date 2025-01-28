@@ -40,29 +40,28 @@ func dijkstraAlgo(graph *Graph) {
 			(*data.d)[i] = dValue
 			(*data.from)[i] = fromValue
 		}
-		updateDataStrings(graph, data.numOfNodes, *data.distance, *data.from, *data.d)
+
+		graph.updateDataStrings(data.numOfNodes, *data.distance, *data.from, *data.d)
 	}
 
 	calculateConnectedNodeDistances := func(data *AlgoDataContainer) {
 		connections := graph.connectionMap[data.currentNodeIndex]
 		for i := 0; i < len(connections); i++ {
 			toNodeIndex := connections[i].toNode.index
-
-			if !slices.Contains(*data.visited, toNodeIndex) {
-				(*data.d)[toNodeIndex] = connections[i].cost + (*data.distance)[data.currentNodeIndex]
-			}
+			(*data.d)[toNodeIndex] = connections[i].cost + (*data.distance)[data.currentNodeIndex]
 		}
-		updateDataStrings(graph, data.numOfNodes, *data.distance, *data.from, *data.d)
+
+		graph.updateDataStrings(data.numOfNodes, *data.distance, *data.from, *data.d)
 	}
 
-	setNewDistancesIFSmaller := func(data *AlgoDataContainer) {
-		for i := 0; i < len(*data.d); i++ {
+	setNewDistancesIfSmaller := func(data *AlgoDataContainer) {
+		for i := 0; i < data.numOfNodes; i++ {
 			if (*data.d)[i] < (*data.distance)[i] && i != data.currentNodeIndex {
 				(*data.distance)[i] = (*data.d)[i]
 				(*data.from)[i] = data.currentNodeIndex
 			}
 		}
-		updateDataStrings(graph, data.numOfNodes, *data.distance, *data.from, *data.d)
+		graph.updateDataStrings(data.numOfNodes, *data.distance, *data.from, *data.d)
 	}
 
 	pickClosestNodeIndex := func(data *AlgoDataContainer) int {
@@ -70,25 +69,12 @@ func dijkstraAlgo(graph *Graph) {
 		var minIndex int = math.MaxInt
 
 		for i := 0; i < len(*data.d); i++ {
-			if (*data.d)[i] > 0 && (*data.d)[i] < minValue {
+			if !slices.Contains(*data.visited, i) && (*data.d)[i] < minValue {
 				minValue = (*data.d)[i]
 				minIndex = i
 			}
 		}
 		return minIndex
-	}
-
-	updateAndRestDataWithResults := func(data *AlgoDataContainer, minIndex int) {
-		*data.visited = append(*data.visited, minIndex)
-		data.currentNodeIndex = minIndex
-
-		for i := 0; i < len(*data.d); i++ {
-			if i != data.currentNodeIndex {
-				(*data.d)[i] = math.MaxFloat32
-			} else {
-				(*data.d)[i] = 0
-			}
-		}
 	}
 
 	colorResultInGraph := func(data *AlgoDataContainer) {
@@ -110,20 +96,34 @@ func dijkstraAlgo(graph *Graph) {
 		}
 	}
 
+	isFinished := func(data *AlgoDataContainer) bool {
+		numOfVisitableNodes := 0
+		for i := 0; i < data.numOfNodes; i++ {
+			if (*data.d)[i] < math.MaxFloat32 && !slices.Contains(*data.visited, i) {
+				numOfVisitableNodes++
+			}
+		}
+
+		return numOfVisitableNodes == 0
+	}
+
 	if graph.startNode != nil && graph.destNode != nil {
 		data := newAlgoDataContainer(graph)
 		setupSlices(&data)
 
-		for len(*data.visited) != data.numOfNodes {
-			calculateConnectedNodeDistances(&data)
-			setNewDistancesIFSmaller(&data)
+		for {
+			*data.visited = append(*data.visited, data.currentNodeIndex)
+			graph.nodes[data.currentNodeIndex].updateType(CURRENTNODE)
 
-			minIndex := pickClosestNodeIndex(&data)
-			if minIndex == math.MaxInt {
+			calculateConnectedNodeDistances(&data)
+			setNewDistancesIfSmaller(&data)
+
+			data.currentNodeIndex = pickClosestNodeIndex(&data)
+
+			if isFinished(&data) {
 				break
 			}
 
-			updateAndRestDataWithResults(&data, minIndex)
 			time.Sleep(1 * time.Second)
 		}
 		colorResultInGraph(&data)

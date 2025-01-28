@@ -9,12 +9,13 @@ import (
 
 // Constants
 const (
-	windowWidth  int32   = 1100
-	windowHeight int32   = 900
-	uiWidth      int32   = 100
-	uiHeight     int32   = windowHeight
-	buttonWidth  float32 = 80.0
-	buttonHeight float32 = 40.0
+	windowWidth    int32   = 1100
+	windowHeight   int32   = 900
+	uiWidth        int32   = 150
+	uiHeight       int32   = 200
+	buttonWidth    float32 = 80.0
+	buttonHeight   float32 = 50.0
+	buttonDistance float32 = 5.0
 )
 
 // Create and add components
@@ -70,7 +71,7 @@ func handleInput(graph *Graph, draggedNode **Node, fromNodeToConn **Node, toNode
 		for i := 0; i < len(graph.nodes); i++ {
 			n := (graph.nodes)[i]
 			if isPointInsideCircle(rl.GetMouseX(), rl.GetMouseY(), n.x, n.y, n.radius) {
-				n.nodeType = CURRENTNODE
+				n.nodeType = PATHNODE
 				if graph.startNode == nil {
 					graph.startNode = n
 				} else if graph.startNode != nil && graph.destNode == nil {
@@ -101,22 +102,23 @@ func drawState(graph *Graph) {
 }
 
 func drawAndHandleGui(graph *Graph, index *int) {
-	buttonX := float32(windowWidth - uiWidth)
+	buttonY := 0
+	var uiWidthOffset float32 = 330.0
 	drawIndex := 0
 
-	if gui.Button(rl.NewRectangle(buttonX, buttonWidth*float32(drawIndex)+10, buttonWidth, buttonHeight), "Node") {
+	if gui.Button(rl.NewRectangle((buttonWidth+10)*float32(drawIndex)+uiWidthOffset, float32(buttonY), buttonWidth, buttonHeight), "Node") {
 		addNodeToGraph(&graph.nodes, &graph.connectionMap, index)
 		graph.nodeStr.appendValue(fmt.Sprintf("%d\n", *index))
 		*index = *index + 1
 	}
 	drawIndex++
 
-	if gui.Button(rl.NewRectangle(buttonX, buttonWidth*float32(drawIndex)+10, buttonWidth, buttonHeight), "Start") {
+	if gui.Button(rl.NewRectangle((buttonWidth+10)*float32(drawIndex)+uiWidthOffset, float32(buttonY), buttonWidth, buttonHeight), "Start") {
 		go dijkstraAlgo(graph)
 	}
 	drawIndex++
 
-	if gui.Button(rl.NewRectangle(buttonX, buttonWidth*float32(drawIndex)+10, buttonWidth, buttonHeight), "New Graph") {
+	if gui.Button(rl.NewRectangle((buttonWidth+10)*float32(drawIndex)+uiWidthOffset, float32(buttonY), buttonWidth, buttonHeight), "New Graph") {
 		*graph = newGraph()
 		*index = 0
 	}
@@ -148,13 +150,10 @@ func MainLoop() {
 
 		// Draw
 		rl.BeginDrawing()
-
 		rl.ClearBackground(rl.RayWhite)
-
 		drawAndHandleGui(&graph, index)
 		drawState(&graph)
-		drawGraphData(&graph)
-
+		graph.drawGraphData()
 		rl.EndDrawing()
 	}
 }

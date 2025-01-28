@@ -22,7 +22,7 @@ type ConnectionType int
 
 const (
 	BASICCONN ConnectionType = iota
-	CANDIDATECONN
+	CURRENTCONN
 	PATHCONN
 )
 
@@ -100,7 +100,7 @@ func (conn *Connection) draw() {
 	switch conn.connType {
 	case BASICCONN:
 		color = rl.Black
-	case CANDIDATECONN:
+	case CURRENTCONN:
 		color = rl.Blue
 	case PATHCONN:
 		color = rl.Green
@@ -176,7 +176,7 @@ func newGraph() Graph {
 	}
 }
 
-func updateDataStrings(graph *Graph, numOfNodes int, distance []float32, from []int, d []float32) {
+func (graph *Graph) updateDataStrings(numOfNodes int, distance []float32, from []int, d []float32) {
 	graph.distanceDataStr.setValue("Distance" + "\n")
 	graph.fromDataStr.setValue("From" + "\n")
 	graph.dDataStr.setValue("D" + "\n")
@@ -188,7 +188,7 @@ func updateDataStrings(graph *Graph, numOfNodes int, distance []float32, from []
 	}
 }
 
-func drawGraphData(graph *Graph) {
+func (graph *Graph) drawGraphData() {
 	rl.DrawText(graph.nodeStr.getValue(), 10, 10, 20, rl.Black)
 	rl.DrawText(graph.fromDataStr.getValue(), 90, 10, 20, rl.Black)
 	rl.DrawText(graph.distanceDataStr.getValue(), 150, 10, 20, rl.Black)
