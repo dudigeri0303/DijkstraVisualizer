@@ -1,7 +1,7 @@
 # DijkstraVisualizer
 Dijkstra algorithm visualizer made with GoLang and Raylib
 
-<img src="https://github.com/user-attachments/assets/f5cc8d73-93b3-4a7f-a24f-f3109677aa1a" alt="Screenshot" width="450" height="550">
+<img src="https://github.com/user-attachments/assets/f5cc8d73-93b3-4a7f-a24f-f3109677aa1a" alt="Screenshot" width="550" height="450">
 
 ### Controls  
 - **Create a Node**:  
